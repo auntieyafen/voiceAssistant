@@ -1,3 +1,8 @@
+"""
+Contains core functionalities of LLM, including extract information from website,
+add to LLM using RAG and generate response.
+Source: https://github.com/y-pred/Langchain/blob/main/Langchain%202.0/RAG_Conversational_Chatbot.ipynb
+"""
 import os
 from typing import List
 import requests

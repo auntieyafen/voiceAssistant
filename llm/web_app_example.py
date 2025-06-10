@@ -1,3 +1,9 @@
+"""
+An example of how llm_core.py can be used. In general, take note at the code
+under ATTENTION 
+Source: https://github.com/y-pred/Langchain/blob/main/Langchain%202.0/RAG_Conversational_Chatbot.ipynb
+"""
+
 import os
 from dotenv import load_dotenv
 # For UI
@@ -13,7 +19,7 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 MAIN_URL = "https://www.tum.de/en/studies/degree-programs"
 
-# TOOLS NEEDED
+# Add tools needed for RAG Chatbot (ATTENTION)
 embedding_model = GoogleGenerativeAIEmbeddings(
     model="models/embedding-001",
     google_api_key=GEMINI_API_KEY
@@ -31,7 +37,7 @@ vector_store = rag_class.get_vector_store(chunks_program_dict.get("chunks_list")
 st.header("TUM Application AI Chatbot")
 st.subheader("Welcome to TUM applicant chatbot, where you can ask questions" \
 "about TUM programs")
-# Create variables to be stored in streamlit session state
+# Create variables to be stored in streamlit session state (ATTENTION)
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = [
         AIMessage(content="Hello, how can I help you?")
@@ -42,13 +48,13 @@ if 'vector_store' not in st.session_state:
 user_input = st.chat_input("Write your question here ...")
 # Once user entered the question
 if user_input and user_input.strip() != "":
-    # Generate response
+    # Generate response (ATTENTION)
     response = rag_class.get_response(
         user_input,
         st.session_state.vector_store,
         st.session_state.chat_history
     )
-    # Store questions and response into chat_history
+    # Store questions and response into chat_history (ATTENTION)
     st.session_state.chat_history.append(HumanMessage(content=user_input))
     st.session_state.chat_history.append(AIMessage(content=response))
 for message in st.session_state.chat_history:
