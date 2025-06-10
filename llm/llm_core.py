@@ -232,10 +232,19 @@ class RAGChatbot:
             history_retriever: result of get_history_retriever(...)
         """
         prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are a RAG chatbot providing advices for applicants"
-            " who want to apply to TUM programs. If the question from user is"
-            " too ambigious, as follow-up questions to better understand what"
-            " they need from you."),
+            ("system", """Context: {context}. In the Context, programs which state
+              Tuition fee for international students are not free for
+              international students. Programs which does not state it can be
+              regarded as free. You are a RAG chatbot providing
+              advices for applicants who want to apply to TUM programs by
+              looking for information in Context. If you cannot find answer
+              from the context, simply say that the information is not available
+              in your data, don't make up the answer.
+              If the question from user is too ambigious, as follow-up
+              questions to better understand what they need from you.
+              Answer in markdown format.
+              The answer should include answer, explanation (e.g. further details),
+              and program urls"""),
             MessagesPlaceholder(variable_name="chat_history"),
             ("user", "{input}")
         ])

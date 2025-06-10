@@ -16,17 +16,17 @@ from llm_core import RAGChatbot
 
 # Import Gemini API key
 load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 MAIN_URL = "https://www.tum.de/en/studies/degree-programs"
 
-# Add tools needed for RAG Chatbot (ATTENTION)
+# TOOLS NEEDED (ATTENTION)
 embedding_model = GoogleGenerativeAIEmbeddings(
     model="models/embedding-001",
-    google_api_key=GEMINI_API_KEY
+    google_api_key=GOOGLE_API_KEY
 )
 llm = ChatGoogleGenerativeAI(
         model='gemini-2.0-flash',
-        google_api_key=GEMINI_API_KEY,
+        google_api_key=GOOGLE_API_KEY,
         temperature=0.3
 )
 rag_class = RAGChatbot(embedding_model, llm)
@@ -35,9 +35,9 @@ vector_store = rag_class.get_vector_store(chunks_program_dict.get("chunks_list")
 
 # Add header
 st.header("TUM Application AI Chatbot")
-st.subheader("Welcome to TUM applicant chatbot, where you can ask questions" \
+st.write("Welcome to TUM applicant chatbot, where you can ask questions " \
 "about TUM programs")
-# Create variables to be stored in streamlit session state (ATTENTION)
+# Create variables to be stored in streamlit session state
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = [
         AIMessage(content="Hello, how can I help you?")
@@ -48,19 +48,19 @@ if 'vector_store' not in st.session_state:
 user_input = st.chat_input("Write your question here ...")
 # Once user entered the question
 if user_input and user_input.strip() != "":
-    # Generate response (ATTENTION)
-    response = rag_class.get_response(
-        user_input,
-        st.session_state.vector_store,
-        st.session_state.chat_history
-    )
-    # Store questions and response into chat_history (ATTENTION)
+    # Store questions into chat_history
     st.session_state.chat_history.append(HumanMessage(content=user_input))
+    with st.chat_message("Human"):
+        st.markdown(user_input)
+    with st.chat_message("AI"):
+        with st.spinner("Thinking ..."):
+            # Generate response (ATTENTION)
+            response = rag_class.get_response(
+                user_input,
+                st.session_state.vector_store,
+                st.session_state.chat_history
+            )
+            st.markdown(response)
+    # Store response into chat_history
     st.session_state.chat_history.append(AIMessage(content=response))
-for message in st.session_state.chat_history:
-    if isinstance(message, AIMessage):
-        with st.chat_message("AI"):
-            st.markdown(message.content)
-    else:
-        with st.chat_message("Human"):
-            st.markdown(message.content)
+
